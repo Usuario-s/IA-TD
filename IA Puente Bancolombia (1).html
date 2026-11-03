@@ -1,0 +1,489 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>IA Puente Bancolombia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: lienzo negro azulado con cajas claras que brillan en azul. Columna izquierda = el esquema (áreas técnicas, servicios, IA, proveedores). Columna derecha = celular del usuario y bitácora. */
+:root{
+  --bg:#060A18;
+  --ink:#16213D;
+  --ink-soft:#4A5C85;
+  --paper:#E8F0FF;
+  --edge:#4A90FF;
+  --title:#1D4ED8;
+  --on-bg:#E4ECFF;
+  --on-bg-soft:#8FA3CC;
+  --heading:#8DB8FF;
+  --glow:0 0 0 1px rgba(74,144,255,.35),0 0 14px rgba(74,144,255,.5);
+  --ia:#2B2358;
+  --ok:#08743F;
+  --bad:#C9241E;
+  --bad-bg:#FFE1DC;
+  --route:#5A3BD0;
+  --route-bg:#ECE6FF;
+  --font-display:'Bricolage Grotesque','Arial Narrow',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--on-bg);font-family:var(--font-body);font-size:15px;line-height:1.5;
+  padding-block:24px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--edge);outline-offset:3px}
+
+/* header */
+.eyebrow{font:500 12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+h1{font:800 clamp(2rem,5.4vw,3.4rem)/1.02 var(--font-display);margin:6px 0 10px;text-wrap:balance;letter-spacing:-.02em}
+.lead{max-width:62ch;margin:0;font-size:16px}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:16px}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;background:var(--paper);border:2px solid var(--edge);border-radius:999px;padding:6px 14px 6px 8px}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.switch .track{width:42px;height:24px;border-radius:999px;border:2px solid var(--edge);background:#d9d4b0;position:relative;transition:background .2s}
+.switch .track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--ink);transition:transform .2s}
+.switch input:checked + .track{background:var(--ia)}
+.switch input:checked + .track::after{transform:translateX(18px);background:var(--paper)}
+.switch input:focus-visible + .track{outline:3px solid var(--edge);outline-offset:3px}
+.btn{background:var(--ink);color:var(--paper);border:2px solid var(--edge);border-radius:999px;padding:8px 18px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--ia)}
+.hint{font-size:14px;color:var(--ink-soft)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--paper);border:2px solid var(--edge);border-radius:6px;padding:10px 12px;min-width:0}
+.stat b{display:block;font:800 clamp(1.15rem,3.6vw,1.8rem)/1.1 var(--font-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat span{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px}
+.stat.bad b{color:var(--bad)}
+.stat.good b{color:var(--title)}
+
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:0;min-width:0}
+.side{display:flex;flex-direction:column;gap:20px;min-width:0}
+
+.box{background:var(--paper);border:2px solid var(--edge);border-radius:6px;padding:14px;min-width:0}
+.tag{font:500 11px/1.3 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.box h2{font:800 1.15rem/1.2 var(--font-display);margin:0 0 10px}
+.link{width:2px;height:22px;background:var(--edge);margin:0 auto;box-shadow:0 0 8px var(--edge)}
+
+/* áreas técnicas */
+.areas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.areas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.area{border:2px dashed var(--edge);border-radius:6px;padding:8px 10px;transition:background .2s,border-color .2s}
+.area b{display:block;font-size:14px}
+.area span{display:block;font-size:12px;color:var(--ink-soft);line-height:1.35}
+.area.alert{background:var(--route-bg);border:2px solid var(--route);animation:blink .7s ease-in-out 3}
+@keyframes blink{50%{background:#d8cdff}}
+.alertline{margin:10px 0 0;min-height:22px;font:500 13px var(--font-mono);color:var(--route)}
+
+/* servicios */
+.svcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.svc{border:2px solid var(--edge);border-radius:6px;padding:9px 11px;background:var(--paper);transition:background .25s,border-color .25s;min-width:0}
+.svc b{display:block;font-size:14px;line-height:1.25}
+.svc small{display:block;font-size:12px;margin-top:3px;color:var(--ok);font-weight:600}
+.svc.down{border-color:var(--bad);background:var(--bad-bg)}
+.svc.down small{color:var(--bad)}
+.svc.moving{border:2px dashed var(--route);background:var(--route-bg)}
+.svc.moving small{color:var(--route)}
+
+/* IA */
+.ia{max-width:360px;width:100%;margin:0 auto;background:var(--ia);color:var(--paper);border:2px solid var(--edge);border-radius:14px;padding:12px 16px;display:flex;gap:14px;align-items:center}
+.ia .chip{flex:none;width:52px;height:52px;border-radius:12px;background:var(--paper);color:var(--ia);display:grid;place-items:center;font:800 24px var(--font-display);border:2px solid var(--edge)}
+.ia.active .chip{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,251,224,.0)}50%{box-shadow:0 0 0 7px rgba(255,251,224,.55)}}
+.ia b{display:block;font:800 1.05rem/1.2 var(--font-display)}
+.ia span{display:block;font-size:13px;line-height:1.35;opacity:.95}
+
+.wires{display:block;width:100%;height:64px;overflow:visible}
+.wire{stroke:var(--edge);stroke-width:2px;fill:none;vector-effect:non-scaling-stroke}
+.wire.failed{stroke:var(--bad);stroke-dasharray:6 6}
+.wire.carry{stroke:var(--route);stroke-width:5px;stroke-dasharray:10 6;animation:dash .8s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-16}}
+
+/* proveedores */
+.provs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.prov{margin:0 4px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 4px 10px;background:var(--paper);border:2px solid var(--edge);border-radius:8px;cursor:pointer;text-align:center;min-width:0;transition:background .2s}
+.prov:hover{background:#fff}
+.prov .dot{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:800 18px var(--font-display);color:#fff;background:#2F63E8;border:2px solid var(--edge);transition:background .2s,box-shadow .2s}
+.prov.bad .dot{background:var(--bad)}
+.prov.carry .dot{box-shadow:0 0 0 4px var(--route)}
+.prov .nm{font-weight:600;font-size:13px;line-height:1.2}
+.prov .st{font-size:12px;line-height:1.25;color:var(--ok);font-weight:600}
+.prov.bad .st{color:var(--bad)}
+.prov.carry .st{color:var(--route)}
+.prov .ct{font-size:11.5px;color:var(--ink-soft);line-height:1.2}
+@media (max-width:420px){.prov .nm{font-size:12px}.prov .st{font-size:11px}.prov .dot{width:38px;height:38px}}
+.provnote{text-align:center;font-size:13px;color:var(--ink-soft);margin:12px 0 0}
+
+/* celular */
+.phone{width:100%;max-width:300px;margin:0 auto;background:var(--paper);border:3px solid var(--edge);border-radius:30px;overflow:hidden;}
+.phone .top{background:var(--bg);border-bottom:3px solid var(--edge);padding:14px 16px 10px;font:800 15px var(--font-display)}
+.phone .body{padding:12px 14px 16px;display:flex;flex-direction:column;gap:8px}
+.banner{border:2px solid var(--edge);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.35;min-height:0}
+.banner.bad{background:var(--bad-bg);border-color:var(--bad);color:#7a1511}
+.banner.info{background:var(--route-bg);border-color:var(--route);color:#33217f}
+.banner[hidden]{display:none}
+.act{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:#fff;border:2px solid var(--edge);border-radius:8px;padding:10px 12px;cursor:pointer;font-weight:500}
+.act:hover{background:var(--bg)}
+.act i{font-style:normal;font-size:18px}
+.result{min-height:44px;font-size:13px;border:2px dashed var(--edge);border-radius:8px;padding:8px 10px;line-height:1.35}
+.result.ok{color:var(--ok);border-color:var(--ok)}
+.result.bad{color:var(--bad);border-color:var(--bad)}
+.phonecap{text-align:center;font-size:13px;color:var(--ink-soft);margin:12px 0 0}
+
+/* bitácora */
+.log{list-style:none;margin:0;padding:0;max-height:270px;overflow:auto;display:flex;flex-direction:column;gap:6px;font:400 12.5px/1.45 var(--font-mono)}
+.log li{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px}
+.log .t{color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.log .k-ia{color:var(--route)}
+.log .k-bad{color:var(--bad)}
+.log .k-ok{color:var(--ok)}
+.log .empty{display:block;color:var(--ink-soft)}
+
+/* qué hace la IA */
+.does{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.does{grid-template-columns:minmax(0,1fr)}}
+.does div{border:2px solid var(--edge);border-radius:6px;padding:10px 12px;background:var(--paper)}
+.does b{display:block;font:800 1.05rem var(--font-display)}
+.does span{font-size:13.5px}
+.foot{font-size:13px;color:var(--ink-soft);max-width:80ch}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* tema oscuro azulado */
+.box,.stat,.switch,.phone,.does div,.prov{color:var(--ink)}
+.box,.stat,.does div,.phone,.prov,.switch{box-shadow:var(--glow)}
+.svc,.area,.act{box-shadow:0 0 6px rgba(74,144,255,.3)}
+.svc.down{box-shadow:0 0 10px rgba(201,36,30,.5)}
+.area.alert{box-shadow:0 0 12px rgba(90,59,208,.7)}
+.eyebrow,.provnote,.phonecap,.foot,#hDoes{color:var(--on-bg-soft)}
+.lead{color:var(--on-bg)}
+h1{color:var(--heading);text-shadow:0 0 24px rgba(74,144,255,.35)}
+.box h2,.does b{color:var(--title)}
+.phone .top{background:#CFE0FF;color:var(--title);border-bottom:3px solid var(--edge)}
+.act:hover{background:#D6E4FF}
+.btn{background:#1D3FBF;color:#fff;border-color:var(--edge);box-shadow:var(--glow)}
+.btn:hover{background:#2B55E0}
+.switch .track{background:#B9C8E8}
+.switch input:checked + .track{background:#2F52E0}
+.wire{filter:drop-shadow(0 0 4px rgba(74,144,255,.9))}
+.wire.failed{stroke:#FF5A52;filter:drop-shadow(0 0 4px rgba(255,90,82,.8))}
+.wire.carry{stroke:#9C86FF;filter:drop-shadow(0 0 6px rgba(156,134,255,.9))}
+.prov:hover{background:#fff}
+.prov.carry .dot{box-shadow:0 0 0 4px var(--route),0 0 14px 4px rgba(90,59,208,.6)}
+/* la IA es lo que más resalta */
+.ia{background:linear-gradient(135deg,#1B2A8A,#3A2CA8);border:2px solid #A9CDFF;
+  box-shadow:0 0 0 3px rgba(150,195,255,.35),0 0 28px 6px rgba(80,140,255,.75),0 0 70px 14px rgba(90,110,255,.45);
+  animation:iaglow 2.6s ease-in-out infinite}
+.ia.active{animation-duration:.9s}
+@keyframes iaglow{
+  0%,100%{box-shadow:0 0 0 3px rgba(150,195,255,.35),0 0 28px 6px rgba(80,140,255,.75),0 0 70px 14px rgba(90,110,255,.45)}
+  50%{box-shadow:0 0 0 4px rgba(170,210,255,.55),0 0 40px 10px rgba(100,160,255,.95),0 0 100px 24px rgba(100,120,255,.6)}}
+.ia .chip{border-color:#A9CDFF;box-shadow:0 0 14px rgba(169,205,255,.8)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Prototipo de baja fidelidad · Transformación digital</div>
+    <h1>IA puente: Bancolombia sigue funcionando cuando un proveedor falla</h1>
+    <p class="lead">Toca un proveedor para simular que se cae. Mira cómo la IA detecta la falla, avisa a las áreas técnicas y pasa los servicios a otro proveedor. Apaga la IA para ver qué pasa sin ella.</p>
+    <div class="bar">
+      <label class="switch"><input type="checkbox" id="ai" role="switch" checked><span class="track"></span><span id="aiLabel">IA puente activa</span></label>
+      <button class="btn" id="reset" type="button">Reiniciar simulación</button>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Resumen de la simulación">
+    <div class="stat good" id="stActive"><b>6 de 6</b><span>Servicios activos</span></div>
+    <div class="stat" id="stRec"><b>—</b><span>Tiempo de recuperación</span></div>
+    <div class="stat" id="stLoss"><b>$ 0 M</b><span>Pérdida simulada (1 s = 1 min)</span></div>
+  </section>
+
+  <div class="grid">
+    <div class="col">
+      <section class="box" aria-labelledby="hAreas">
+        <p class="tag">Empresa Bancolombia</p>
+        <h2 id="hAreas">Áreas técnicas</h2>
+        <div class="areas" id="areas">
+          <div class="area" data-a="ti"><b>TI</b><span>Coordina y vigila</span></div>
+          <div class="area" data-a="ciber"><b>Ciberseguridad</b><span>Valida y resuelve</span></div>
+          <div class="area" data-a="datos"><b>Datos</b><span>Registra la falla</span></div>
+          <div class="area" data-a="ux"><b>UX</b><span>Avisa al usuario</span></div>
+        </div>
+        <p class="alertline" id="alertline" aria-live="polite"></p>
+      </section>
+      <div class="link" aria-hidden="true"></div>
+
+      <section class="box" aria-labelledby="hSvc">
+        <p class="tag">Arquitectura de servicios independientes</p>
+        <h2 id="hSvc">Servicios digitales: Mi app Bancolombia, web, etc.</h2>
+        <div class="svcs" id="svcs"></div>
+      </section>
+      <div class="link" aria-hidden="true"></div>
+
+      <div class="ia" id="ia">
+        <div class="chip" aria-hidden="true">IA</div>
+        <div><b>IA puente</b><span id="iaText">Vigilando a los 4 proveedores.</span></div>
+      </div>
+
+      <svg class="wires" viewBox="0 0 100 64" preserveAspectRatio="none" aria-hidden="true">
+        <line class="wire" id="w1" x1="50" y1="0" x2="12.5" y2="64"/>
+        <line class="wire" id="w2" x1="50" y1="0" x2="37.5" y2="64"/>
+        <line class="wire" id="w3" x1="50" y1="0" x2="62.5" y2="64"/>
+        <line class="wire" id="w4" x1="50" y1="0" x2="87.5" y2="64"/>
+      </svg>
+
+      <div class="provs" id="provs"></div>
+      <p class="provnote">Proveedores. Toca uno para simular una falla o para restablecerlo.</p>
+    </div>
+
+    <aside class="side">
+      <section aria-label="Vista del usuario">
+        <div class="phone">
+          <div class="top">Mi app Bancolombia</div>
+          <div class="body">
+            <div class="banner" id="banner" hidden></div>
+            <div id="acts"></div>
+            <div class="result" id="result" aria-live="polite">Toca una operación para probarla.</div>
+          </div>
+        </div>
+        <p class="phonecap">Lo que ve el usuario (área UX)</p>
+      </section>
+
+      <section class="box" aria-labelledby="hLog">
+        <p class="tag">Bitácora de la IA</p>
+        <h2 id="hLog">Qué está pasando</h2>
+        <ol class="log" id="log" aria-live="polite"></ol>
+      </section>
+    </aside>
+  </div>
+
+  <section aria-labelledby="hDoes">
+    <p class="tag" id="hDoes">La IA hace solo tres cosas</p>
+    <div class="does">
+      <div><b>Comunica</b><span>Es el puente entre la arquitectura de Bancolombia y cada proveedor.</span></div>
+      <div><b>Alerta</b><span>Avisa a las áreas técnicas y al proveedor apenas aparece un problema.</span></div>
+      <div><b>Redirige</b><span>Pasa los servicios afectados a otra línea para que se mantengan en pie.</span></div>
+    </div>
+  </section>
+
+  <p class="foot">Prototipo ilustrativo. Los servicios y las rutas de respaldo son ejemplos para la demostración. La referencia de ~$15 millones por minuto sale del documento del proyecto, y la pérdida simulada la reparte según los servicios caídos.</p>
+</div>
+
+<script>
+(function(){
+  var NAMES={1:'Proveedor 1',2:'Proveedor 2',3:'Proveedor 3',4:'Proveedor 4'};
+  var S=[
+    {id:'transf',name:'Transferencias',route:[1,2,3]},
+    {id:'pse',name:'Pagos PSE',route:[2,3,4]},
+    {id:'saldo',name:'Consulta de saldo',route:[3,4,1]},
+    {id:'retiro',name:'Retiro sin tarjeta',route:[4,1,2]},
+    {id:'qr',name:'Pagos QR',route:[1,3,4]},
+    {id:'nequi',name:'Envíos a Nequi',route:[2,4,1]}
+  ];
+  var $=function(s){return document.querySelector(s)};
+  var ai=true, failed=new Set(), svc={}, timers=[], tStart=0, loss=0, recovery=null, iaState='watch', logItems=[], alertOn=false, alertText='';
+
+  var svcEls={}, provEls={}, actEls={};
+  var svcsBox=$('#svcs'), provsBox=$('#provs'), actsBox=$('#acts');
+
+  S.forEach(function(s){
+    var d=document.createElement('div');
+    d.className='svc';
+    d.innerHTML='<b>'+s.name+'</b><small></small>';
+    svcsBox.appendChild(d);
+    svcEls[s.id]={root:d,st:d.querySelector('small')};
+  });
+
+  [1,2,3,4].forEach(function(p){
+    var b=document.createElement('button');
+    b.type='button';
+    b.className='prov';
+    b.innerHTML='<span class="dot">'+p+'</span><span class="nm">'+NAMES[p]+'</span><span class="st"></span><span class="ct"></span>';
+    b.addEventListener('click',function(){ failed.has(p)?restore(p):fail(p); });
+    provsBox.appendChild(b);
+    provEls[p]={root:b,st:b.querySelector('.st'),ct:b.querySelector('.ct'),dot:b.querySelector('.dot')};
+  });
+
+  S.slice(0,3).forEach(function(s){
+    var b=document.createElement('button');
+    b.type='button';
+    b.className='act';
+    b.innerHTML='<span>'+s.name+'</span><i aria-hidden="true">›</i>';
+    b.addEventListener('click',function(){ tryService(s); });
+    actsBox.appendChild(b);
+    actsBox.style.display='flex'; actsBox.style.flexDirection='column'; actsBox.style.gap='8px';
+  });
+
+  function fmt(sec){ return sec.toFixed(1).replace('.',','); }
+  function nowSec(){ return (performance.now()-tStart)/1000; }
+  function name(id){ return S.filter(function(s){return s.id===id})[0].name; }
+  function log(msg,kind){
+    if(!logItems.length) tStart=performance.now();
+    logItems.push({t:nowSec(),msg:msg,kind:kind||''});
+  }
+  function later(ms,fn){ timers.push(setTimeout(function(){fn();render();},ms)); }
+
+  function resetAll(){
+    timers.forEach(clearTimeout); timers=[];
+    failed.clear();
+    S.forEach(function(s){ svc[s.id]={prov:s.route[0],status:'ok',moved:false}; });
+    loss=0; recovery=null; iaState='watch'; logItems=[]; alertOn=false; alertText='';
+    $('#result').className='result'; $('#result').textContent='Toca una operación para probarla.';
+    render();
+  }
+
+  function fail(p){
+    log('',''); logItems.pop();
+    var first=!logItems.length;
+    if(first) tStart=performance.now();
+    failed.add(p);
+    var hit=S.filter(function(s){return svc[s.id].prov===p});
+    hit.forEach(function(s){ svc[s.id].status='down'; });
+    log('Falla: el '+NAMES[p]+' deja de responder. '+(hit.length?'Sin servicio: '+hit.map(function(s){return s.name}).join(', ')+'.':'No tenía servicios asignados.'),'bad');
+    if(!ai){
+      log('Sin IA nadie detecta ni redirige. Los servicios siguen caídos hasta que el proveedor se recupere.','bad');
+      render(); return;
+    }
+    if(!hit.length){ render(); return; }
+    later(800,function(){
+      iaState='detect';
+      log('La IA detecta la falla en el '+NAMES[p]+'.','ia');
+    });
+    later(1600,function(){
+      iaState='alert';
+      alertOn=true; alertText='Alerta: '+NAMES[p]+' sin respuesta';
+      log('La IA alerta a TI, Ciberseguridad, Datos y UX, y avisa al '+NAMES[p]+'.','ia');
+      timers.push(setTimeout(function(){alertOn=false;render();},2300));
+    });
+    later(2400,function(){
+      iaState='route';
+      S.forEach(function(s){
+        var x=svc[s.id];
+        if(x.prov===p && x.status==='down'){
+          var q=s.route.filter(function(r){return !failed.has(r)})[0];
+          if(q){ x.prov=q; x.status='moving'; x.moved=true; log('La IA redirige '+s.name+' al '+NAMES[q]+'.','ia'); }
+          else { log(s.name+': no hay otro proveedor disponible.','bad'); }
+        }
+      });
+    });
+    later(3100,function(){
+      var any=false;
+      S.forEach(function(s){ if(svc[s.id].status==='moving'){ svc[s.id].status='ok'; any=true; } });
+      iaState='watch';
+      if(any){ recovery=nowSec(); log('Servicios restablecidos en '+fmt(recovery)+' s. La IA sigue vigilando.','ok'); }
+    });
+  }
+
+  function restore(p){
+    failed.delete(p);
+    log('El '+NAMES[p]+' vuelve a responder.','ok');
+    S.forEach(function(s){ var x=svc[s.id]; if(x.prov===p && x.status==='down'){ x.status='ok'; } });
+    if(!ai){
+      log('Los servicios caídos se recuperan por su cuenta.','ok');
+      render(); return;
+    }
+    later(700,function(){
+      S.forEach(function(s){
+        var x=svc[s.id];
+        if(s.route[0]===p && x.prov!==p){
+          x.prov=p; x.moved=false; x.status='ok';
+          log('La IA devuelve '+s.name+' a su ruta principal ('+NAMES[p]+').','ia');
+        }
+      });
+    });
+    render();
+  }
+
+  function tryService(s){
+    var x=svc[s.id], r=$('#result');
+    if(x.status==='ok'){ r.className='result ok'; r.textContent='Listo: '+s.name+' funcionó. Ruta usada: '+NAMES[x.prov]+'.'; }
+    else if(x.status==='moving'){ r.className='result'; r.textContent='Procesando '+s.name+'…'; }
+    else { r.className='result bad'; r.textContent='No pudimos completar '+s.name+'. Intenta más tarde.'; }
+  }
+
+  function render(){
+    var okCount=0, down=0;
+    S.forEach(function(s){
+      var x=svc[s.id], el=svcEls[s.id];
+      el.root.className='svc'+(x.status==='down'?' down':x.status==='moving'?' moving':'');
+      el.st.textContent = x.status==='down' ? '✕ Sin servicio · '+NAMES[x.prov]
+                       : x.status==='moving' ? '↻ Redirigiendo a '+NAMES[x.prov]
+                       : '● Activo · vía '+NAMES[x.prov]+(x.moved?' (respaldo)':'');
+      if(x.status==='ok') okCount++;
+      if(x.status==='down') down++;
+    });
+
+    [1,2,3,4].forEach(function(p){
+      var cnt=0, carry=0;
+      S.forEach(function(s){ var x=svc[s.id]; if(x.prov===p){ cnt++; if(x.moved) carry++; } });
+      var el=provEls[p], bad=failed.has(p);
+      el.root.className='prov'+(bad?' bad':carry>0?' carry':'');
+      el.dot.textContent = bad ? '✕' : String(p);
+      el.st.textContent = bad ? 'Sin respuesta' : carry>0 ? 'Cubre +'+carry : 'Operativo';
+      el.ct.textContent = cnt+(cnt===1?' servicio':' servicios');
+      el.root.setAttribute('aria-pressed',bad?'true':'false');
+      el.root.setAttribute('aria-label',NAMES[p]+', '+(bad?'sin respuesta. Tocar para restablecer.':'operativo. Tocar para simular una falla.'));
+      var w=$('#w'+p);
+      w.setAttribute('class','wire'+(bad?' failed':carry>0?' carry':''));
+    });
+
+    var iaEl=$('#ia'), t=$('#iaText');
+    iaEl.className='ia'+(iaState!=='watch'?' active':'');
+    t.textContent = iaState==='detect' ? 'Detectando una falla…'
+                  : iaState==='alert' ? 'Enviando alertas…'
+                  : iaState==='route' ? 'Redirigiendo servicios…'
+                  : !ai ? 'Apagada. No vigila ni redirige.'
+                  : failed.size ? 'Vigilando. Hay '+failed.size+' proveedor'+(failed.size>1?'es':'')+' caído'+(failed.size>1?'s':'')+'.'
+                  : 'Vigilando a los 4 proveedores.';
+    iaEl.style.opacity = ai ? '1' : '.45';
+
+    document.querySelectorAll('.area').forEach(function(a){ a.classList.toggle('alert',alertOn); });
+    $('#alertline').textContent = alertOn ? alertText : '';
+
+    var b=$('#banner');
+    if(down>0){ b.hidden=false; b.className='banner bad'; b.textContent='Algunos servicios no están disponibles. Intenta más tarde.'; }
+    else if(failed.size>0 && ai){ b.hidden=false; b.className='banner info'; b.textContent='Estamos resolviendo un inconveniente. Tus servicios siguen disponibles.'; }
+    else { b.hidden=true; }
+
+    var sa=$('#stActive'); sa.querySelector('b').textContent=okCount+' de '+S.length;
+    sa.className='stat '+(down>0?'bad':'good');
+    var sr=$('#stRec'), rb=sr.querySelector('b');
+    if(down>0 && !ai){ rb.textContent='Sin recuperar'; sr.className='stat bad'; }
+    else if(recovery!==null){ rb.textContent=fmt(recovery)+' s'; sr.className='stat good'; }
+    else { rb.textContent='—'; sr.className='stat'; }
+    var sl=$('#stLoss'); sl.querySelector('b').textContent='$ '+loss.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+    sl.className='stat'+(loss>0?' bad':'');
+
+    var ol=$('#log');
+    if(!logItems.length){ ol.innerHTML='<li><span class="empty" style="grid-column:1/-1">Sin eventos todavía. Toca un proveedor para simular una falla.</span></li>'; }
+    else {
+      ol.innerHTML=logItems.map(function(i){
+        return '<li class="k-'+(i.kind||'n')+'"><span class="t">+'+fmt(i.t)+' s</span><span>'+i.msg+'</span></li>';
+      }).join('');
+      ol.scrollTop=ol.scrollHeight;
+    }
+  }
+
+  setInterval(function(){
+    var down=0; S.forEach(function(s){ if(svc[s.id].status==='down') down++; });
+    if(down>0){ loss+= (down/S.length)*15; render(); }
+  },1000);
+
+  $('#ai').addEventListener('change',function(e){
+    ai=e.target.checked;
+    $('#aiLabel').textContent = ai ? 'IA puente activa' : 'IA puente apagada';
+    resetAll();
+  });
+  $('#reset').addEventListener('click',resetAll);
+
+  resetAll();
+})();
+</script>
+
+</body></html>
